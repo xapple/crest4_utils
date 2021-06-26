@@ -70,6 +70,7 @@ class OldDatabase:
             result = []
             for line in lines:
                 num, name, minus, frac = line.strip().split('\t')
+                if ',' in name: raise Exception("Got a comma in the name.")
                 if frac != '-1': continue
                 result.append((num, name))
             result.sort(key=lambda elem: int(elem[0]))
