@@ -10,7 +10,6 @@ A script to print statistics about the tre and map files.
 # Imports #
 import inspect
 from autopaths import Path
-import Bio.SeqIO.FastaIO
 import ete3
 
 # Get the current directory of this python script #
@@ -18,10 +17,10 @@ this_file = Path((inspect.stack()[0])[1])
 this_dir  = this_file.directory
 
 # Path to database #
-map_path   = this_dir.directory + 'databases/silvamod128/silvamod128.map'
-tre_path   = this_dir.directory + 'databases/silvamod128/silvamod128.tre'
-names_path = this_dir.directory + 'databases/silvamod128/silvamod128.names'
-fasta_path = this_dir.directory + 'databases/silvamod128/silvamod128.fasta'
+map_path   = this_dir + '../../databases/silvamod138/silvamod138.map'
+tre_path   = this_dir + '../../databases/silvamod138/silvamod138.tre'
+names_path = this_dir + '../../databases/silvamod138/silvamod138.names'
+fasta_path = this_dir + '../../databases/silvamod138/silvamod138.fasta'
 
 ###############################################################################
 def parse_map_ids():
@@ -45,8 +44,10 @@ def parse_names_ids():
             yield line.split(',')[0].strip()
 
 def parse_fasta_ids():
-    for seq in Bio.SeqIO.FastaIO.SimpleFastaParser(fasta_path):
-        yield seq[0]
+    from Bio import SeqIO
+    with open(fasta_path) as handle:
+        for record in SeqIO.parse(handle, "fasta"):
+            yield record.id
 
 ###############################################################################
 def get_duplicates(seq):
@@ -67,3 +68,10 @@ dup_map_names = get_duplicates(map_names)
 dup_tre_ids   = get_duplicates(tre_ids)
 dup_names_ids = get_duplicates(names_ids)
 dup_fasta_ids = get_duplicates(fasta_ids)
+
+print(f"dup_map_ids   : {dup_map_ids}",    len(dup_map_ids))
+print(f"dup_map_names : {dup_map_names}",  len(dup_map_names))
+print(f"dup_tre_ids   : {dup_tre_ids}",    len(dup_tre_ids))
+print(f"dup_names_ids : {dup_names_ids}",  len(dup_names_ids))
+print(f"dup_fasta_ids : {dup_fasta_ids}",  len(dup_fasta_ids))
+
