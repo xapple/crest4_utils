@@ -138,7 +138,7 @@ class OldDatabase:
         import boto3
         s3 = boto3.resource('s3')
         bucket = s3.Bucket('crest4')
-        response = bucket.upload_file(self.short_name, self.short_name)
+        response = bucket.upload_file(self.new_tar_gz, self.new_tar_gz.name)
         assert response['ResponseMetadata']['HTTPStatusCode'] == 200
 
 ###############################################################################
