@@ -17,10 +17,10 @@ this_file = Path((inspect.stack()[0])[1])
 this_dir  = this_file.directory
 
 # Path to database #
-map_path   = this_dir + '../../databases/silvamod138/silvamod138.map'
-tre_path   = this_dir + '../../databases/silvamod138/silvamod138.tre'
-names_path = this_dir + '../../databases/silvamod138/silvamod138.names'
-fasta_path = this_dir + '../../databases/silvamod138/silvamod138.fasta'
+map_path   = this_dir + '../../databases/bold/bold.map'
+tre_path   = this_dir + '../../databases/bold/bold.tre'
+names_path = this_dir + '../../databases/bold/bold.names'
+fasta_path = this_dir + '../../databases/bold/bold.fasta'
 
 ###############################################################################
 def parse_map_ids():
@@ -51,10 +51,9 @@ def parse_fasta_ids():
 
 ###############################################################################
 def get_duplicates(seq):
-  seen = set()
-  seen_add = seen.add
-  seen_twice = set( x for x in seq if x in seen or seen_add(x) )
-  return seen_twice
+    seen = set()
+    add_to_seen = seen.add
+    return set(x for x in seq if x in seen or add_to_seen(x))
 
 ###############################################################################
 map_ids   = list(parse_map_ids())
@@ -69,7 +68,6 @@ dup_tre_ids   = get_duplicates(tre_ids)
 dup_names_ids = get_duplicates(names_ids)
 dup_fasta_ids = get_duplicates(fasta_ids)
 
-print(f"dup_map_ids   : {dup_map_ids}",    len(dup_map_ids))
 print(f"dup_map_names : {dup_map_names}",  len(dup_map_names))
 print(f"dup_tre_ids   : {dup_tre_ids}",    len(dup_tre_ids))
 print(f"dup_names_ids : {dup_names_ids}",  len(dup_names_ids))
