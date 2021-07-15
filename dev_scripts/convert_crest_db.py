@@ -70,45 +70,64 @@ class OldDatabase:
     #------------------------------- Conversion ------------------------------#
     def convert_map(self):
         # How to convert the lines #
-        def process(lines):
+        def process_map(lines):
+            # Initialize #
             result = []
             for line in lines:
+                # Parse the line #
                 num, name, minus, frac = line.strip().split('\t')
+                # Check if we are still in the names at the top of the file #
+                if frac != '-1': continue
+                # Remove commas #
                 if ',' in name:
                     print("Removed a comma from '%s'" % name)
                     name = name.replace(',', '')
-                if frac != '-1': continue
+                # Add this entry #
                 result.append((num, name))
+            # Sort all entries #
             result.sort(key=lambda elem: int(elem[0]))
+            # Return entries one by one #
             for item in result:
                 yield ','.join(item) + '\n'
         # Convert the old to new #
         with open(self.orig_map, 'rt') as old, \
              open(self.new_map, 'wt') as new:
-            new.writelines(process(old))
+            new.writelines(process_map(old))
+        # Return #
         return self.new_map
 
     def convert_names(self):
         # How to convert the lines #
-        def process(lines):
+        def process_names(lines):
+            # Initialize #
             result = []
             for line in lines:
+                # Parse the line #
                 num, name, minus, frac = line.strip().split('\t')
+                # Check if we have reached the maps at the bottom of the file #
                 if frac == '-1': break
+                # Remove commas #
+                if ',' in name:
+                    print("Removed a comma from '%s'" % name)
+                    name = name.replace(',', '')
+                # Add this entry #
                 result.append((num, name, frac))
+            # Sort all entries #
             result.sort(key=lambda elem: int(elem[0]))
+            # Return entries one by one #
             for item in result:
                 yield ','.join(item) + '\n'
         # Convert the old to new #
         with open(self.orig_map, 'rt') as old, \
              open(self.new_names, 'wt') as new:
-            new.writelines(process(old))
+            new.writelines(process_names(old))
+        # Return #
         return self.new_names
 
     def convert_fasta(self):
         # If the FASTA is not present, copy it from the original #
         if not self.new_fasta:
-            print("Duplicated the FASTA file to '%s'" % self.new_fasta)
+            print("Duplicated the FASTA file to '%s'" % self.new_fasta.with_tilda)
             self.orig_fasta.copy(self.new_fasta)
         # Remove duplicate entries #
         self.new_fasta.remove_duplicates()
@@ -116,16 +135,31 @@ class OldDatabase:
         self.new_fasta.convert_U_to_T()
 
     def convert(self):
+        # Message #
+        msg = "Converting database '%s' to '%s'"
+        print(msg % (self.base_dir.with_tilda, self.new_dir.with_tilda))
         # Create a directory if it doesn't exist #
         self.new_dir.create_if_not_exists()
         # Call methods #
+        print("Converting file '%s'" %  self.orig_map.with_tilda)
         self.convert_map()
         self.convert_names()
+        print("Converting file '%s'" %  self.orig_fasta.with_tilda)
         self.convert_fasta()
         # Copy the tree file #
         self.orig_tre.copy(self.new_tre)
+
+    def check(self):
+        # Check that the parsing of the resulting files works #
+        print("Checking file '%s'" %  self.new_map)
+        from crest4 import databases
+        db = getattr(databases, self.short_name)
+        print("Number of entries in map file: ", len(db.acc_to_node))
+        print("Number of entries in names file: ", len(db.node_to_name))
+
+    def compress(self):
         # Prepare to compress the directory #
-        print("Compressing the directory at '%s'" % self.new_dir)
+        print("Compressing the directory at '%s'" % self.new_dir.with_tilda)
         env_vars = os.environ.copy()
         env_vars['COPYFILE_DISABLE'] = '1'
         options = ["--no-mac-metadata", "--exclude", ".DS_Store",
@@ -134,6 +168,10 @@ class OldDatabase:
         os.chdir(self.new_dir.directory)
         sh.tar(*options, self.new_tar_gz, self.short_name,
                _env=env_vars, _fg=True)
+
+    def upload(self):
+        # Message #
+        print("Upload the file at '%s'" % self.new_tar_gz.with_tilda)
         # Upload to the AWS S3 bucket #
         import boto3
         s3 = boto3.resource('s3')
@@ -177,3 +215,6 @@ bold = Bold()
 # How to use these objects #
 if __name__ == '__main__':
     bold.convert()
+    bold.check()
+    #bold.compress()
+    #bold.upload()
