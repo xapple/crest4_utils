@@ -149,13 +149,21 @@ class OldDatabase:
         # Copy the tree file #
         self.orig_tre.copy(self.new_tre)
 
-    def check(self):
-        # Check that the parsing of the resulting files works #
-        print("Checking file '%s'" %  self.new_map)
+    @property
+    def db(self):
         from crest4 import databases
         db = getattr(databases, self.short_name)
-        print("Number of entries in map file: ", len(db.acc_to_node))
-        print("Number of entries in names file: ", len(db.node_to_name))
+        return db
+
+    def check(self):
+        # Check that the parsing of the resulting files works #
+        print("Checking file '%s'" % self.new_map)
+        # Map file #
+        print("Number of entries in map file: ", len(self.db.acc_to_node))
+        # Names file #
+        print("Number of entries in names file: ", len(self.db.node_to_name))
+        # Tree file #
+        print("Number of nodes in tree file: ", len(self.db.tree))
 
     def compress(self):
         # Prepare to compress the directory #
@@ -172,11 +180,14 @@ class OldDatabase:
     def upload(self):
         # Message #
         print("Upload the file at '%s'" % self.new_tar_gz.with_tilda)
-        # Upload to the AWS S3 bucket #
+        # Get the S3 resource #
         import boto3
         s3 = boto3.resource('s3')
+        # Get the bucker #
         bucket = s3.Bucket('crest4')
+        # Upload #
         response = bucket.upload_file(self.new_tar_gz, self.new_tar_gz.name)
+        # Check success #
         assert response['ResponseMetadata']['HTTPStatusCode'] == 200
 
 ###############################################################################
@@ -206,15 +217,26 @@ class Bold(OldDatabase):
     # The real name #
     short_name = 'bold'
 
+#-----------------------------------------------------------------------------#
+class Midori248(OldDatabase):
+    """
+    Represents the new bold database.
+    """
+
+    # The real name #
+    short_name = 'midori248'
+
 ###############################################################################
 # As our databases should only be converted on disk once, we have singletons #
 silvamod128 = SilvaMod128()
 silvamod138 = SilvaMod138()
-bold = Bold()
+bold        = Bold()
+midori248   = Midori248()
 
-# How to use these objects #
+# Example of how to use these objects #
 if __name__ == '__main__':
-    bold.convert()
-    bold.check()
+    pass
+    #bold.convert()
+    #bold.check()
     #bold.compress()
     #bold.upload()
