@@ -186,9 +186,14 @@ class OldDatabase:
         # Get the bucket #
         bucket = s3.Bucket('crest4')
         # Upload #
-        response = bucket.upload_file(self.new_tar_gz, self.new_tar_gz.name)
-        # Check success #
-        assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+        return bucket.upload_file(self.new_tar_gz, self.new_tar_gz.name)
+
+    def make_public(self):
+        """
+        A method to make the newly uploaded object in the AWS S3 bucket
+        readable by anyone. #TODO
+        """
+        pass
 
 ###############################################################################
 class SilvaMod128(OldDatabase):
