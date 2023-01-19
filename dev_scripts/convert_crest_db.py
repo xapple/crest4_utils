@@ -127,7 +127,7 @@ class OldDatabase:
     def convert_fasta(self):
         # If the FASTA is not present, copy it from the original #
         if not self.new_fasta:
-            print("Duplicated the FASTA file to '%s'" % self.new_fasta.with_tilda)
+            print("\nDuplicated the FASTA file to '%s'" % self.new_fasta.with_tilda)
             self.orig_fasta.copy(self.new_fasta)
         # Remove duplicate entries #
         self.new_fasta.remove_duplicates()
@@ -136,15 +136,15 @@ class OldDatabase:
 
     def convert(self):
         # Message #
-        msg = "Converting database '%s' to '%s'"
+        msg = "\nConverting database '%s' to '%s'"
         print(msg % (self.base_dir.with_tilda, self.new_dir.with_tilda))
         # Create a directory if it doesn't exist #
         self.new_dir.create_if_not_exists()
         # Call methods #
-        print("Converting file '%s'" %  self.orig_map.with_tilda)
+        print("\nConverting file '%s'" %  self.orig_map.with_tilda)
         self.convert_map()
         self.convert_names()
-        print("Converting file '%s'" %  self.orig_fasta.with_tilda)
+        print("\nConverting file '%s'" %  self.orig_fasta.with_tilda)
         self.convert_fasta()
         # Copy the tree file #
         self.orig_tre.copy(self.new_tre)
@@ -157,7 +157,7 @@ class OldDatabase:
 
     def check(self):
         # Check that the parsing of the resulting files works #
-        print("Checking file '%s'" % self.new_map)
+        print("\nChecking file '%s'" % self.new_map)
         # Map file #
         print("Number of entries in map file: ", len(self.db.acc_to_node))
         # Names file #
@@ -180,14 +180,14 @@ class OldDatabase:
     def upload(self):
         # Message #
         print("Upload the file at '%s'" % self.new_tar_gz.with_tilda)
-        # Get the S3 resource #
+        # Get the AWS S3 resource #
         import boto3
         s3 = boto3.resource('s3')
-        # Get the bucker #
+        # Get the bucket #
         bucket = s3.Bucket('crest4')
         # Upload #
         response = bucket.upload_file(self.new_tar_gz, self.new_tar_gz.name)
-        # Check success #
+        # Check success #
         assert response['ResponseMetadata']['HTTPStatusCode'] == 200
 
 ###############################################################################
@@ -220,23 +220,32 @@ class Bold(OldDatabase):
 #-----------------------------------------------------------------------------#
 class Midori248(OldDatabase):
     """
-    Represents the new bold database.
+    Represents the new midori database.
     """
 
     # The real name #
     short_name = 'midori248'
 
+#-----------------------------------------------------------------------------#
+class SilvaMod138Pr2(OldDatabase):
+    """
+    Represents the new silvamod138pr2 v2 database.
+    """
+
+    # The real name #
+    short_name = 'silvamod138pr2'
+
 ###############################################################################
 # As our databases should only be converted on disk once, we have singletons #
-silvamod128 = SilvaMod128()
-silvamod138 = SilvaMod138()
-bold        = Bold()
-midori248   = Midori248()
+silvamod128    = SilvaMod128()
+silvamod138    = SilvaMod138()
+bold           = Bold()
+midori248      = Midori248()
+silvamod138pr2 = SilvaMod138Pr2()
 
 # Example of how to use these objects #
 if __name__ == '__main__':
-    pass
-    #bold.convert()
-    #bold.check()
-    #bold.compress()
-    #bold.upload()
+    #silvamod138pr2.convert()
+    silvamod138pr2.check()
+    #silvamod138pr2.compress()
+    #silvamod138pr2.upload()
