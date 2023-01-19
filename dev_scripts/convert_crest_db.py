@@ -254,3 +254,4 @@ if __name__ == '__main__':
     silvamod138pr2.check()
     #silvamod138pr2.compress()
     #silvamod138pr2.upload()
+    #silvamod138pr2.make_public()
