@@ -166,6 +166,11 @@ class OldDatabase:
         print("Number of nodes in tree file: ", len(self.db.tree))
 
     def compress(self):
+        """
+        Runs a command similar to:
+
+             $ tar --no-mac-metadata --exclude .DS_Store --options gzip:compression-level=9 -zcvf db.tar.gz db
+        """
         # Prepare to compress the directory #
         print("Compressing the directory at '%s'" % self.new_dir.with_tilda)
         env_vars = os.environ.copy()
