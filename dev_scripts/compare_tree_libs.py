@@ -6,6 +6,11 @@ Written by Lucas Sinclair.
 
 A script to test tree libraries.
 
+Other options:
+* treelib (almost no functionality)
+* anytree
+* NetworkX
+
 Results:
 
     ---------- treeswift ----------
