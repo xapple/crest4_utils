@@ -23,7 +23,7 @@ base_url  = "http://services.cbu.uib.no/supplementary/crest/fasta/"
 file_name = "silvamod128.fasta.gz"
 
 # The destination #
-dest_dir = "~/repos/sinclair/work/freelance_clients/lanzen/databases/silvamod128/"
+dest_dir = "~/repos/crest4/databases/silvamod128/"
 dest_file = Path(dest_dir + file_name)
 
 # Download #
