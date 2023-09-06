@@ -210,31 +210,13 @@ class SilvaMod128(OldDatabase):
     short_name = 'silvamod128'
 
 #-----------------------------------------------------------------------------#
-class SilvaMod138(OldDatabase):
-    """
-    Represents the new silvamod database.
-    """
-
-    # The real name #
-    short_name = 'silvamod138'
-
-#-----------------------------------------------------------------------------#
-class Bold(OldDatabase):
-    """
-    Represents the new bold database.
-    """
-
-    # The real name #
-    short_name = 'bold'
-
-#-----------------------------------------------------------------------------#
-class Midori248(OldDatabase):
+class Midori248Darn(OldDatabase):
     """
     Represents the new midori database.
     """
 
     # The real name #
-    short_name = 'midori248'
+    short_name = 'midori253darn'
 
 #-----------------------------------------------------------------------------#
 class SilvaMod138Pr2(OldDatabase):
@@ -247,16 +229,13 @@ class SilvaMod138Pr2(OldDatabase):
 
 ###############################################################################
 # As our databases should only be converted on disk once, we have singletons #
-silvamod128    = SilvaMod128()
-silvamod138    = SilvaMod138()
-bold           = Bold()
-midori248      = Midori248()
+midori253darn  = Midori248Darn()
 silvamod138pr2 = SilvaMod138Pr2()
 
 # Example of how to use these objects #
 if __name__ == '__main__':
-    #silvamod138pr2.convert()
+    silvamod138pr2.convert()
     silvamod138pr2.check()
-    #silvamod138pr2.compress()
-    #silvamod138pr2.upload()
-    #silvamod138pr2.make_public()
+    silvamod138pr2.compress()
+    silvamod138pr2.upload()
+    silvamod138pr2.make_public()
