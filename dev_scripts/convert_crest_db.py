@@ -160,7 +160,7 @@ class OldDatabase:
         print("\nChecking file '%s'" % self.new_map)
         # Map file #
         print("Number of entries in map file: ", len(self.db.acc_to_node))
-        # Names file #
+        # Names file #
         print("Number of entries in names file: ", len(self.db.node_to_name))
         # Tree file #
         print("Number of nodes in tree file: ", len(self.db.tree))
@@ -173,12 +173,15 @@ class OldDatabase:
         """
         # Prepare to compress the directory #
         print("Compressing the directory at '%s'" % self.new_dir.with_tilda)
+        # Make a copy of the environment #
         env_vars = os.environ.copy()
         env_vars['COPYFILE_DISABLE'] = '1'
+        # The arguments for the command line #
         options = ["--no-mac-metadata", "--exclude", ".DS_Store",
                    "--options", "gzip:compression-level=9", "-zcvf"]
-        # Compress the directory #
+        # Change the working directory #
         os.chdir(self.new_dir.directory)
+        # Compress the directory #
         sh.tar(*options, self.new_tar_gz, self.short_name,
                _env=env_vars, _fg=True)
 
