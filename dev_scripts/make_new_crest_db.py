@@ -41,6 +41,9 @@ The TSV file to parse contains three columns:
     2) Path in the tree of life.
     3) Name of the taxa.
 
+The third column is always ignored, but it generally matches the last item
+in the taxonomic path (second column).
+
 Typically, you would call this script like this:
 
     $ crest4_utils/dev_scripts/make_new_crest_db.py crest4_utils/example_files/18S_curated_141222_GenBank_nds.tsv
@@ -99,14 +102,12 @@ class AccessionTSV:
         self.by_names[root_name]  = current_num
         # Iterate over rows #
         for row in self:
-            # Parse the row #
+            # Parse the row (the full_name is ignored) #
             acc, path, full_name = row
             # Split the path into a list #
             path = path.split('/')
             # Check that the first name of the path is the root #
             assert path[0] == root_name
-            # Check that the last name of the path is the full name #
-            assert path[-1] == full_name
             # Iterate over the path #
             for name in path:
                 # Get the node if it exists #
