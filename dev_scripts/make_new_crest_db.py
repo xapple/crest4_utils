@@ -41,6 +41,12 @@ The TSV file to parse contains three columns:
     2) Path in the tree of life.
     3) Name of the taxa.
 
+Here is an example excerpt:
+
+    OQ071219	Main genome/Eukaryota/Amorphea/Metazoa/Mollusca/Scaphopoda/Dentaliida/Dentaliidae/Antalis/Antalis occidentalis	Antalis occidentalis
+    OQ071220	Main genome/Eukaryota/Amorphea/Metazoa/Mollusca/Bivalvia/Mytiloida/Mytilidae/Dacrydium/Dacrydium vitreum	Dacrydium vitreum
+    OQ071221	Main genome/Eukaryota/Amorphea/Metazoa/Mollusca/Bivalvia/Lucinida/Thyasiridae/Leptaxinus/Leptaxinus minutus	Leptaxinus minutus
+
 The third column is always ignored, but it generally matches the last item
 in the taxonomic path (second column).
 
@@ -91,9 +97,9 @@ class AccessionTSV:
         self.by_names = {}
         # Initialize the node number to zero #
         current_num = 0
-        # Get the name of the root #
-        root_path = next(iter(self))[1].split('/')
-        root_name = root_path[0]
+        # Get the name of the root using the first item #
+        first_path = next(iter(self))[1].split('/')
+        root_name  = first_path[0]
         # Make the root of the tree #
         self.root_node = TreeNode(name=current_num)
         self.root_node.add_feature('taxa', root_name)
