@@ -61,7 +61,7 @@ import os, functools
 ###############################################################################
 class AccessionTSV:
     """
-    Represents a TSV file with three columns. Example:
+    Represents a TSV file with three columns. Example line:
     OQ071217    Main genome/Eukaryota/.../Antalis agilis    Antalis agilis
     """
 
@@ -97,9 +97,8 @@ class AccessionTSV:
         self.by_names = {}
         # Initialize the node number to zero #
         current_num = 0
-        # Get the name of the root using the first item #
-        first_path = next(iter(self))[1].split('/')
-        root_name  = first_path[0]
+        # Set the root name to "meta" #
+        root_name = "meta"
         # Make the root of the tree #
         self.root_node = TreeNode(name=current_num)
         self.root_node.add_feature('taxa', root_name)
@@ -112,8 +111,8 @@ class AccessionTSV:
             acc, path, full_name = row
             # Split the path into a list #
             path = path.split('/')
-            # Check that the first name of the path is the root #
-            assert path[0] == root_name
+            # Always start from the same root node #
+            parent = self.root_node
             # Iterate over the path #
             for name in path:
                 # Get the node if it exists #
