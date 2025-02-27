@@ -1,122 +1,123 @@
-0,Main genome,0.0
-1,Eukaryota,0.0
-2,Amorphea,0.85
-3,Metazoa,0.87
-4,Mollusca,0.89
-32,Arthropoda,0.89
-64,Annelida,0.89
-96,Brachiopoda,0.89
-5,Scaphopoda,0.91
-11,Bivalvia,0.91
-33,Malacostraca,0.91
-53,Ostracoda,0.91
-65,Polychaeta,0.91
-97,Rhynchonellata,0.91
-6,Dentaliida,0.93
-20,Gadilida,0.93
-12,Mytiloida,0.93
-16,Lucinida,0.93
-24,Arcoida,0.93
-28,Pectinoida,0.93
-108,Veneroida,0.93
-34,Amphipoda,0.93
-39,Isopoda,0.93
-46,Cumacea,0.93
-54,Myodocopida,0.93
-66,Terebellida,0.93
-70,Eunicida,0.93
-77,Capitellida,0.93
-92,Spionida,0.93
-98,Terebratulida,0.93
-7,Dentaliidae,0.95
-21,Pulsellidae,0.95
-13,Mytilidae,0.95
-17,Thyasiridae,0.95
-25,Limopsidae,0.95
-29,Propeamussiidae,0.95
-109,Semelidae,0.95
-113,Kelliellidae,0.95
-35,Ampeliscidae,0.95
-43,Podoceridae,0.95
-50,Lysianassidae,0.95
-61,Atylidae,0.95
-116,Unciolidae,0.95
-119,Corophiidae,0.95
-40,Munnopsidae,0.95
-105,Ischnomesidae,0.95
-47,Leuconidae,0.95
-102,Diastylidae,0.95
-55,Philomedidae,0.95
-58,Cypridinidae,0.95
-67,Ampharetidae,0.95
-74,Terebellidae,0.95
-86,Trichobranchidae,0.95
-71,Onuphidae,0.95
-78,Capitellidae,0.95
-83,Maldanidae,0.95
-93,Spionidae,0.95
-99,Zeilleriidae,0.95
-8,Antalis,0.97
-22,Pulsellum,0.97
-14,Dacrydium,0.97
-18,Leptaxinus,0.97
-26,Limopsis,0.97
-30,Similipecten,0.97
-110,Abra,0.97
-114,Kelliella,0.97
-36,Haploops,0.97
-44,Laetmatophilus,0.97
-51,Lysianassa,0.97
-62,Nototropis,0.97
-117,Unciola,0.97
-120,Leptocheirus,0.97
-41,Ilyarachna,0.97
-106,Ischnomesus,0.97
-48,Leucon,0.97
-103,Diastylis,0.97
-56,Philomedes,0.97
-59,Vargula,0.97
-68,Amage,0.97
-75,Artacama,0.97
-81,Lanice,0.97
-87,Octobranchus,0.97
-72,Aponuphis,0.97
-90,Paradiopatra,0.97
-79,Dasybranchus,0.97
-84,Maldane,0.97
-94,Pseudopolydora,0.97
-100,Macandrevia,0.97
-9,Antalis agilis,0.99
-10,Antalis occidentalis,0.99
-23,Pulsellum lofotense,0.99
-15,Dacrydium vitreum,0.99
-19,Leptaxinus minutus,0.99
-27,Limopsis cristata,0.99
-31,Similipecten similis,0.99
-112,Similipecten greenlandicus,0.99
-111,Abra longicallus,0.99
-115,Kelliella miliaris,0.99
-37,Haploops carinata,0.99
-38,Haploops robusta,0.99
-45,Laetmatophilus armatus,0.99
-52,Lysianassa costae,0.99
-63,Nototropis vedlomensis,0.99
-118,Unciola planipes,0.99
-121,Leptocheirus hirsutimanus,0.99
-42,Ilyarachna longicornis,0.99
-107,Ischnomesus bispinosus,0.99
-49,Leucon nasicoides,0.99
-104,Diastylis tumida,0.99
-57,Philomedes globosus,0.99
-60,Vargula norvegica,0.99
-69,Amage auricula,0.99
-76,Artacama proboscoidea,0.99
-82,Lanice conchylega,0.99
-88,Octobranchus floriceps,0.99
-89,Octobranchus sikorskii,0.99
-73,Aponuphis bilineata,0.99
-91,Paradiopatra fjordica,0.99
-80,Dasybranchus caducus,0.99
-85,Maldane koreni,0.99
-95,Pseudopolydora pulchra,0.99
-101,Macandrevia cranium,0.99
+0,meta,0.0
+1,Main genome,0.0
+2,Eukaryota,0.83
+3,Amorphea,0.85
+4,Metazoa,0.87
+5,Mollusca,0.89
+33,Arthropoda,0.89
+65,Annelida,0.89
+97,Brachiopoda,0.89
+6,Scaphopoda,0.91
+12,Bivalvia,0.91
+34,Malacostraca,0.91
+54,Ostracoda,0.91
+66,Polychaeta,0.91
+98,Rhynchonellata,0.91
+7,Dentaliida,0.93
+21,Gadilida,0.93
+13,Mytiloida,0.93
+17,Lucinida,0.93
+25,Arcoida,0.93
+29,Pectinoida,0.93
+109,Veneroida,0.93
+35,Amphipoda,0.93
+40,Isopoda,0.93
+47,Cumacea,0.93
+55,Myodocopida,0.93
+67,Terebellida,0.93
+71,Eunicida,0.93
+78,Capitellida,0.93
+93,Spionida,0.93
+99,Terebratulida,0.93
+8,Dentaliidae,0.95
+22,Pulsellidae,0.95
+14,Mytilidae,0.95
+18,Thyasiridae,0.95
+26,Limopsidae,0.95
+30,Propeamussiidae,0.95
+110,Semelidae,0.95
+114,Kelliellidae,0.95
+36,Ampeliscidae,0.95
+44,Podoceridae,0.95
+51,Lysianassidae,0.95
+62,Atylidae,0.95
+117,Unciolidae,0.95
+120,Corophiidae,0.95
+41,Munnopsidae,0.95
+106,Ischnomesidae,0.95
+48,Leuconidae,0.95
+103,Diastylidae,0.95
+56,Philomedidae,0.95
+59,Cypridinidae,0.95
+68,Ampharetidae,0.95
+75,Terebellidae,0.95
+87,Trichobranchidae,0.95
+72,Onuphidae,0.95
+79,Capitellidae,0.95
+84,Maldanidae,0.95
+94,Spionidae,0.95
+100,Zeilleriidae,0.95
+9,Antalis,0.97
+23,Pulsellum,0.97
+15,Dacrydium,0.97
+19,Leptaxinus,0.97
+27,Limopsis,0.97
+31,Similipecten,0.97
+111,Abra,0.97
+115,Kelliella,0.97
+37,Haploops,0.97
+45,Laetmatophilus,0.97
+52,Lysianassa,0.97
+63,Nototropis,0.97
+118,Unciola,0.97
+121,Leptocheirus,0.97
+42,Ilyarachna,0.97
+107,Ischnomesus,0.97
+49,Leucon,0.97
+104,Diastylis,0.97
+57,Philomedes,0.97
+60,Vargula,0.97
+69,Amage,0.97
+76,Artacama,0.97
+82,Lanice,0.97
+88,Octobranchus,0.97
+73,Aponuphis,0.97
+91,Paradiopatra,0.97
+80,Dasybranchus,0.97
+85,Maldane,0.97
+95,Pseudopolydora,0.97
+101,Macandrevia,0.97
+10,Antalis agilis,0.99
+11,Antalis occidentalis,0.99
+24,Pulsellum lofotense,0.99
+16,Dacrydium vitreum,0.99
+20,Leptaxinus minutus,0.99
+28,Limopsis cristata,0.99
+32,Similipecten similis,0.99
+113,Similipecten greenlandicus,0.99
+112,Abra longicallus,0.99
+116,Kelliella miliaris,0.99
+38,Haploops carinata,0.99
+39,Haploops robusta,0.99
+46,Laetmatophilus armatus,0.99
+53,Lysianassa costae,0.99
+64,Nototropis vedlomensis,0.99
+119,Unciola planipes,0.99
+122,Leptocheirus hirsutimanus,0.99
+43,Ilyarachna longicornis,0.99
+108,Ischnomesus bispinosus,0.99
+50,Leucon nasicoides,0.99
+105,Diastylis tumida,0.99
+58,Philomedes globosus,0.99
+61,Vargula norvegica,0.99
+70,Amage auricula,0.99
+77,Artacama proboscoidea,0.99
+83,Lanice conchylega,0.99
+89,Octobranchus floriceps,0.99
+90,Octobranchus sikorskii,0.99
+74,Aponuphis bilineata,0.99
+92,Paradiopatra fjordica,0.99
+81,Dasybranchus caducus,0.99
+86,Maldane koreni,0.99
+96,Pseudopolydora pulchra,0.99
+102,Macandrevia cranium,0.99
