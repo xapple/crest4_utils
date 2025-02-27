@@ -186,6 +186,13 @@ class MapFile(OutputFile):
 
     def lines(self):
         for leaf in self.acc_tsv.tree.iter_leaves():
+            # Check if the leaf has an accession #
+            if not hasattr(leaf, 'acc'):
+                msg = "Leaf node %s (%s) is missing an accession ('%s')."
+                path = [node.taxa for node in leaf.get_ancestors()]
+                path = '/'.join(reversed(path))
+                raise Exception(msg % (leaf.name, leaf.taxa, path))
+            # Return the line #
             yield str(leaf.name) + ',' + leaf.acc + '\n'
 
 ###############################################################################
