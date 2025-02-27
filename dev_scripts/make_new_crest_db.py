@@ -70,8 +70,19 @@ class AccessionTSV:
         self.tsv_path = tsv_path
 
     def __iter__(self):
+        # Imports #
         import csv
-        return csv.reader(open(self.tsv_path), delimiter='\t')
+        import gzip
+        # Check if file is gzipped by reading the magic number #
+        with open(self.tsv_path, 'rb') as f:
+            magic_number = f.read(2)
+        # Open with gzip if magic number matches  #
+        if magic_number.startswith(b'\x1f\x8b'):
+            file_obj = gzip.open(self.tsv_path, 'rt')
+        else:
+            file_obj = open(self.tsv_path)
+        # Return the reader #
+        return csv.reader(file_obj, delimiter='\t')
 
     def __call__(self):
         assert self.tree
