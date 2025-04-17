@@ -15,27 +15,7 @@ This script generates the following output:
 2) A `.names` file.
 3) A `.tre` file
 
-This script has to also add the percentage values to the third column of
-`.names` file. It should be default values computed just by counting the
-number of ranks for the start.
-
-The deepest rank such as species should be 0.99 and then progressively get
-lower to 0.85.
-
-The domain level (e.g. Bacteria) should always be 0.0 however.
-
-'Genome',        # 1     | n/a
-'Domain',        # 2     | 0.0
-'Superkingdom'   # 3     | 0.85
-'Kingdom',       # 4     | 0.87
-'Phylum',        # 5     | 0.89
-'Class',         # 6     | 0.91
-'Order',         # 7     | 0.93
-'Family',        # 8     | 0.95
-'Genus',         # 9     | 0.97
-'Species',       # 10    | 0.99
-
-The TSV file to parse contains three columns:
+The TSV file to parse as input contains three columns:
 
     1) Accession.
     2) Path in the tree of life.
@@ -49,6 +29,60 @@ Here is an example excerpt:
 
 The third column is always ignored, but it generally matches the last item
 in the taxonomic path (second column).
+
+The taxonomic path in the file uses the "/" character as a separator, but the
+"/" character appears numerous times within the name of different taxa,
+resulting in a faulty parsing.
+
+Here inside a species name for instance:
+
+AB023970        Main genome/Bacteria/Bacteria (superkingdom)/Terrabacteria/Firmicutes/Clostridia/Peptostreptococcales-Tissierellales/Peptostreptococcaceae/Peptoclostridium/4/[Clostridium] hiranonis      [Clostridium] hiranonis
+
+And here inside a strain name for instance:
+
+AJ784845        Main genome/Bacteria/Bacteria (superkingdom)/Terrabacteria/Firmicutes/Bacilli/Bacillales/Bacillaceae/Bacillus/Bacillus sp. Con a/4 Bacillus sp. Con a/4
+
+So, the script will also identify segments that are just numbers preceded
+by '/' at the end of taxon names and keep them inside the name.
+
+We also need to check that we don't create leaves before being at the end of
+a taxonomic path. If the species name has already been seen but the genus name
+is novel for instance, we might create a leaf at the genus. This can happen is
+the same species name exists in different parts of the tree of life.
+
+The `.map` file consists of a CSV file with two columns e.g. `6082,HM392072`
+linking the accession to the node number.
+
+The `.tre` file is a Newick format and contain something like:
+`(2,3,4,(((14,17,18,3513,8860...` etc.
+
+The `.names` file is created as a CSV file with three columns such as:
+`10,Actinopteri,0.85`.
+
+It specifies the ID of a node and links it to the similarity fraction that
+should be used as a threshold when assigning (this is done by first checking
+its distance from the root).
+
+This script has to add the percentage values to the third column of
+`.names` file. It should be default values computed just by counting the
+number of ranks for the start.
+
+The deepest rank such as species should be 0.99 and then progressively get
+lower to 0.85.
+
+The domain level (e.g. Bacteria) should always be 0.0 however.
+
+'Root',          # 0     | n/a
+'Genome',        # 1     | 0.0
+'Domain',        # 2     | 0.0
+'Superkingdom'   # 3     | 0.85
+'Kingdom',       # 4     | 0.87
+'Phylum',        # 5     | 0.89
+'Class',         # 6     | 0.91
+'Order',         # 7     | 0.93
+'Family',        # 8     | 0.95
+'Genus',         # 9     | 0.97
+'Species',       # 10    | 0.99
 
 Typically, you would call this script like this:
 
@@ -66,10 +100,12 @@ class AccessionTSV:
     """
 
     # ------------------------------ Methods -------------------------------- #
-    def __init__(self, tsv_path):
-        self.tsv_path = tsv_path
+    def __init__(self, path):
+        """Here we record the full path of the input file."""
+        self.tsv_path = path
 
     def __iter__(self):
+        """Here we create a CSV reader object on the input file."""
         # Imports #
         import csv
         import gzip
@@ -91,10 +127,12 @@ class AccessionTSV:
     # ----------------------------- Properties ------------------------------ #
     @property
     def output_dir(self):
+        """Where to store all the outputs."""
         return os.path.dirname(self.tsv_path) + '/'
 
     @property
     def output_prefix(self):
+        """Full name of the input file without the last extension."""
         return os.path.splitext(self.tsv_path)[0]
 
     @functools.cached_property
@@ -113,38 +151,50 @@ class AccessionTSV:
         # Make the root of the tree #
         self.root_node = TreeNode(name=current_num)
         self.root_node.add_feature('taxa', root_name)
-        # Add to the hashmaps #
-        self.by_nums[current_num] = self.root_node
-        self.by_names[root_name]  = current_num
+        # For debugging #
+        self.lines = {}
         # Iterate over rows #
         for row in self:
             # Parse the row (the full_name is ignored) #
             acc, path, full_name = row
+            # Check we have an accession #
+            if not acc:
+                msg = "This row does not contain an accession:\n%s"
+                raise Exception(msg % row)
             # Split the path into a list #
             path = path.split('/')
-            # Always start from the same root node #
+            # Check we have a path #
+            if not path:
+                msg = "This row does not contain a taxonomic path:\n%s"
+                raise Exception(msg % row)
+            # Join numerical segments back with their preceding segments #
+            fixed_path = []
+            for i, segment in enumerate(path):
+                if segment.isdigit() and i > 0:
+                    fixed_path[-1] = fixed_path[-1] + '/' + segment
+                else:
+                    fixed_path.append(segment)
+            # Always start from the same root node before looping #
             parent = self.root_node
             # Iterate over the path #
-            for name in path:
-                # Get the node if it exists #
-                found_num = self.by_names.get(name)
-                # Otherwise create it #
-                if found_num is None:
+            for name in fixed_path:
+                # Check if the node exits, but only in the immediate children #
+                for child in parent.get_children():
+                    if child.taxa == name:
+                        # Retrieve the node if it exists already #
+                        node = child
+                        break
+                else:
                     # Increment node number #
                     current_num += 1
                     # Append to the parent #
                     node = parent.add_child(name=current_num)
                     # Add the name #
                     node.add_feature('taxa', name)
-                    # Add to the hashmaps #
-                    self.by_nums[current_num] = node
-                    self.by_names[name] = current_num
-                # Retrieve the node if it exists already #
-                else: node = self.by_nums[found_num]
                 # Set the parent for the next iteration #
                 parent = node
-            # If we are on a leaf, add the accession #
-            else: node.add_feature('acc', acc)
+            # When we are on the last step of the path, add the accession #
+            node.add_feature('acc', acc)
         # Return #
         return self.root_node
 
@@ -187,17 +237,24 @@ class MapFile(OutputFile):
     def lines(self):
         for leaf in self.acc_tsv.tree.iter_leaves():
             # Check if the leaf has an accession #
-            if not hasattr(leaf, 'acc'):
-                msg = "Leaf node %s (%s) is missing an accession ('%s')."
-                path = [node.taxa for node in leaf.get_ancestors()]
-                path = '/'.join(reversed(path))
-                raise Exception(msg % (leaf.name, leaf.taxa, path))
+            if not hasattr(leaf, 'acc'): self.show_bad_leaf(leaf)
             # Return the line #
             yield str(leaf.name) + ',' + leaf.acc + '\n'
 
+    def show_bad_leaf(self, leaf):
+        # List the parents #
+        msg  = "Leaf node %s (%s) is missing an accession ('%s')."
+        path = [node.taxa for node in leaf.get_ancestors()]
+        path = '/'.join(reversed(path))
+        msg  = msg % (leaf.name, leaf.taxa, path)
+        # We also want to see the children #
+        more = '/'.join([node.taxa for node in leaf.get_children()])
+        # Stop here #
+        raise Exception(msg + "\nChildren: " + more)
+
 ###############################################################################
 class NamesFile(OutputFile):
-    """Represents a CSV file with three columns e.g `10,Actinopteri,0.85`."""
+    """Represents a CSV file with three columns e.g `101,Actinopteri,0.85`."""
     extension = '.names'
 
     @functools.cached_property
@@ -205,21 +262,26 @@ class NamesFile(OutputFile):
         """
         Return a dictionary that links the depth of a node (which
         represents its distance from the root) to the similarity value
-        that should be assigned.
+        that should be assigned. Looks like this:
+            {3: 0.85,
+             4: 0.87,
+             5: 0.89, ... }
         """
         # Get the maximum depth #
         depth = lambda leaf: self.acc_tsv.tree.get_distance(leaf)
         max_depth = int(max(map(depth, self.acc_tsv.tree.iter_leaves())))
         # Build the dictionary #
         result = {d: round((0.99 - 0.02 * (max_depth - d)), 2)
-                  for d in range(2, max_depth + 1)}
+                  for d in range(3, max_depth + 1)}
         # Special cases #
-        result[0] = '0.0'
-        result[1] = '0.0'
+        result[0] = 0.0
+        result[1] = 0.0
+        result[2] = 0.0
         # Return #
         return result
 
     def lines(self):
+        """The `node.name` here represents it's numerical ID here."""
         for node in self.acc_tsv.tree.traverse("levelorder"):
             depth  = node.get_distance(self.acc_tsv.tree)
             smlrty = self.depth_to_smlrty[depth]
