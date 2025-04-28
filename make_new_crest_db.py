@@ -151,8 +151,6 @@ class AccessionTSV:
         # Make the root of the tree #
         self.root_node = TreeNode(name=current_num)
         self.root_node.add_feature('taxa', root_name)
-        # For debugging #
-        self.lines = {}
         # Iterate over rows #
         for row in self:
             # Parse the row (the full_name is ignored) #
