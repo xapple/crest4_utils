@@ -86,7 +86,8 @@ The domain level (e.g. Bacteria) should always be 0.0 however.
 
 Typically, you would call this script like this:
 
-    $ crest4_utils/dev_scripts/make_new_crest_db.py crest4_utils/example_files/18S_curated_141222_GenBank_nds.tsv
+    $ crest4_utils/make_new_crest_db.py \
+      crest4_utils/example_files/18S_curated_141222_GenBank_nds.tsv
 """
 
 # Built-in modules #
@@ -142,7 +143,7 @@ class AccessionTSV:
         from ete3 import TreeNode
         # Initialize hashmap of the nodes by number #
         self.by_nums = {}
-        # Initialize hashmap of the numbers (of the nodes) by names #
+        # Initialize hashmap with numbers (of the nodes) by names #
         self.by_names = {}
         # Initialize the node number to zero #
         current_num = 0
@@ -152,7 +153,11 @@ class AccessionTSV:
         self.root_node = TreeNode(name=current_num)
         self.root_node.add_feature('taxa', root_name)
         # Iterate over rows #
-        for row in self:
+        for i, row in enumerate(self):
+            # Check that the row has three columns #
+            if len(row) != 3:
+                msg = "The row %i does not contain three columns:\n%s"
+                raise Exception(msg % (i+1, row))
             # Parse the row (the full_name is ignored) #
             acc, path, full_name = row
             # Check we have an accession #
