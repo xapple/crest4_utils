@@ -127,7 +127,11 @@ class AccessionTSV:
                 # Set the parent for the next iteration #
                 parent = node
             # If we are on a leaf, add the accession #
-            else: node.add_feature('acc', acc)
+            else:
+                if 'acc' in node.features:
+                    node.acc.append(acc)
+                else:
+                    node.add_feature('acc', [acc])
         # Return #
         return self.root_node
 
@@ -169,7 +173,8 @@ class MapFile(OutputFile):
 
     def lines(self):
         for leaf in self.acc_tsv.tree.iter_leaves():
-            yield str(leaf.name) + ',' + leaf.acc + '\n'
+            for acc in leaf.acc:
+                yield str(leaf.name) + ',' + acc + '\n'
 
 ###############################################################################
 class NamesFile(OutputFile):
@@ -207,7 +212,7 @@ class TreeFile(OutputFile):
     extension = '.tre'
 
     def __call__(self):
-        self.acc_tsv.tree.write(format=8, outfile=self.output_path)
+        self.acc_tsv.tree.write(format=8, outfile=self.output_path, format_root_node=True)
         return self.output_path
 
 ###############################################################################
