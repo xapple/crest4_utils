@@ -137,7 +137,7 @@ class AccessionTSV:
     def tree(self):
         """Build the tree in memory using all entries."""
         # Import #
-        from ete3 import TreeNode
+        from ete4 import Tree
         # Initialize a hashmap of the nodes by number #
         self.by_nums = {}
         # Initialize the hashmap with numbers (of the nodes) by names #
@@ -147,8 +147,9 @@ class AccessionTSV:
         # Set the root name to "meta" #
         root_name = "meta"
         # Make the root of the tree #
-        self.root_node = TreeNode(name=current_num)
-        self.root_node.add_feature('taxa', root_name)
+        self.root_node = Tree()
+        self.root_node.name = current_num
+        self.root_node.add_prop('taxa', root_name)
         # Iterate over rows #
         for i, row in enumerate(self):
             # Check that the row has three columns #
@@ -180,7 +181,7 @@ class AccessionTSV:
             for name in fixed_path:
                 # Check if the node exits, but only in the immediate children #
                 for child in parent.get_children():
-                    if child.taxa == name:
+                    if child.get_prop('taxa') == name:
                         # Retrieve the node if it exists already #
                         node = child
                         break
@@ -190,13 +191,14 @@ class AccessionTSV:
                     # Append to the parent #
                     node = parent.add_child(name=current_num)
                     # Add the name #
-                    node.add_feature('taxa', name)
+                    node.add_prop('taxa', name)
                 # Set the parent for the next iteration #
                 parent = node
             # When we are on the last step of the path, add the accession.
             # Here we can support missing `acc` feature too.
-            if 'acc' in node.features: node.acc.append(acc)
-            else:                      node.add_feature('acc', [acc])
+            acc_list = node.get_prop('acc')
+            if acc_list is None: node.add_prop('acc', [acc])
+            else:                acc_list.append(acc)
         # Return #
         return self.root_node
 
@@ -242,21 +244,22 @@ class MapFile(OutputFile):
     extension = '.map'
 
     def lines(self):
-        for leaf in self.acc_tsv.tree.iter_leaves():
+        for leaf in self.acc_tsv.tree.traverse():
+            if not leaf.is_leaf(): continue
             # Check if the leaf has an accession #
-            if not hasattr(leaf, 'acc'): self.show_bad_leaf(leaf)
+            if leaf.get_prop('acc') is None: self.show_bad_leaf(leaf)
             # Return the line (support multiple accessions too) #
-            for acc in leaf.acc:
+            for acc in leaf.get_prop('acc'):
                 yield str(leaf.name) + ',' + acc + '\n'
 
     def show_bad_leaf(self, leaf):
         # List the parents #
         msg  = "Leaf node %s (%s) is missing an accession ('%s')."
-        path = [node.taxa for node in leaf.get_ancestors()]
+        path = [node.get_prop('taxa') for node in leaf.ancestors()]
         path = '/'.join(reversed(path))
-        msg  = msg % (leaf.name, leaf.taxa, path)
+        msg  = msg % (leaf.name, leaf.get_prop('taxa'), path)
         # We also want to see the children #
-        more = '/'.join([node.taxa for node in leaf.get_children()])
+        more = '/'.join([node.get_prop('taxa') for node in leaf.get_children()])
         # Stop here #
         raise Exception(msg + "\nChildren: " + more)
 
@@ -276,8 +279,12 @@ class NamesFile(OutputFile):
              5: 0.89, ... }
         """
         # Get the maximum depth #
-        depth = lambda leaf: self.acc_tsv.tree.get_distance(leaf)
-        max_depth = int(max(map(depth, self.acc_tsv.tree.iter_leaves())))
+        depth = lambda leaf: self.acc_tsv.tree.get_distance(self.acc_tsv.tree,
+                                                            leaf,
+                                                            topological=True)
+        max_depth = int(max(depth(leaf)
+                            for leaf in self.acc_tsv.tree.traverse()
+                            if leaf.is_leaf()))
         # Build the dictionary #
         result = {d: round((0.99 - 0.02 * (max_depth - d)), 2)
                   for d in range(3, max_depth + 1)}
@@ -291,9 +298,14 @@ class NamesFile(OutputFile):
     def lines(self):
         """The `node.name` here represents it's numerical ID here."""
         for node in self.acc_tsv.tree.traverse("levelorder"):
-            depth  = node.get_distance(self.acc_tsv.tree)
+            depth  = self.acc_tsv.tree.get_distance(
+                self.acc_tsv.tree,
+                node,
+                topological=True,
+            )
             smlrty = self.depth_to_smlrty[depth]
-            yield str(node.name) + ',' + node.taxa + ',' + str(smlrty) + '\n'
+            yield (str(node.name) + ',' + node.get_prop('taxa') + ',' +
+                   str(smlrty)+ '\n')
 
 ###############################################################################
 class TreeFile(OutputFile):
@@ -302,7 +314,7 @@ class TreeFile(OutputFile):
 
     def __call__(self):
         # Call function from ete #
-        self.acc_tsv.tree.write(format=8,
+        self.acc_tsv.tree.write(parser=8,
                                 outfile=self.output_path,
                                 format_root_node=True)
         # Return #
