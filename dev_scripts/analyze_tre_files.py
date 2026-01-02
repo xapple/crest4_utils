@@ -5,6 +5,10 @@
 Written by Lucas Sinclair.
 
 A script to print statistics about the tre and map files.
+
+To analyze all databases, you can run this:
+
+    $ find ../databases -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 -n 1 ipython dev_scripts/analyze_tre_files.py
 """
 
 # Imports #
@@ -34,6 +38,10 @@ class AnalyzeTree:
         self.names_path = self.input_dir + f'{db_name}.names'
         self.fasta_path = self.input_dir + f'{db_name}.fasta'
 
+    def __repr__(self):
+        """A simple representation of this object to avoid memory addresses."""
+        return "<%s object on '%s'>" % (self.__class__.__name__, self.input_dir)
+
     # ---------------------------- Properties ------------------------------- #
     @cached_property
     def tree3(self):
@@ -55,6 +63,30 @@ class AnalyzeTree:
         from ete4 import Tree as Tree4
         return Tree4(str(self.tre_path))
 
+    # ---------------------------- Node names ------------------------------- #
+    def parse_tree3_ids(self):
+        for node in self.tree3.traverse():
+            yield node.name
+
+    def parse_tree4_ids(self):
+        for node in self.tree4.traverse():
+            yield node.name
+
+    def check_empty_names(self):
+        """Return counts of unnamed nodes for ete3 and ete4."""
+        # With ete 3 #
+        tree3_empty = 0
+        for name in self.parse_tree3_ids():
+            if name is None or name == '':
+                tree3_empty += 1
+        # With ete 4 #
+        tree4_empty = 0
+        for name in self.parse_tree4_ids():
+            if name is None or name == '':
+                tree4_empty += 1
+        # Return #
+        return {'tree3': tree3_empty, 'tree4': tree4_empty}
+
     # ------------------------------ Methods -------------------------------- #
     def parse_map_ids(self):
         with open(self.map_path, 'rt') as handle:
@@ -65,10 +97,6 @@ class AnalyzeTree:
         with open(self.map_path, 'rt') as handle:
             for line in handle:
                 yield line.split(',')[1].strip()
-
-    def parse_tre_ids(self):
-        for node in self.tree3.traverse():
-            yield node.name.strip()
 
     def parse_names_ids(self):
         with open(self.names_path, 'rt') as handle:
@@ -89,7 +117,7 @@ class AnalyzeTree:
     def __call__(self):
         map_ids   = list(self.parse_map_ids())
         map_names = list(self.parse_map_names())
-        tre_ids   = list(self.parse_tre_ids())
+        tre_ids   = list(self.parse_tree4_ids())
         names_ids = list(self.parse_names_ids())
         fasta_ids = list(self.parse_fasta_ids())
 
@@ -106,14 +134,21 @@ class AnalyzeTree:
 
 ###############################################################################
 if __name__ == '__main__':
+    # Make an argument parser #
     parser = argparse.ArgumentParser(
         description="Print statistics about a crest4 database."
     )
+    # It has a single argument #
     parser.add_argument(
         "directory",
         nargs="?",
         default=None,
         help="Directory containing .map, .tre, .names, .fasta files",
     )
+    # Run it #
     args = parser.parse_args()
+    # Create an object #
     analysis = AnalyzeTree(args.directory)
+    # Run some test functions #
+    print(analysis)
+    print(analysis.check_empty_names())
