@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Script to generate the databases that Vsearch will use.
-This process takes a FASTA as input and indexes it producing a file '.udb'
+Script to generate the databases that VSEARCH will use.
+This process takes a FASTA as input and indexes it, producing a file '.udb'
 """
 
 # Built-in modules #
@@ -19,7 +19,7 @@ from autopaths import Path
 
 ###############################################################################
 # Where the original fasta file is located #
-base_url  = "http://services.cbu.uib.no/supplementary/crest/fasta/"
+base_url  = "https://services.cbu.uib.no/supplementary/crest/fasta/"
 file_name = "silvamod128.fasta.gz"
 
 # The destination #

@@ -141,9 +141,9 @@ class AccessionTSV:
         """Build the tree in memory using all entries."""
         # Import #
         from ete3 import TreeNode
-        # Initialize hashmap of the nodes by number #
+        # Initialize a hashmap of the nodes by number #
         self.by_nums = {}
-        # Initialize hashmap with numbers (of the nodes) by names #
+        # Initialize the hashmap with numbers (of the nodes) by names #
         self.by_names = {}
         # Initialize the node number to zero #
         current_num = 0
