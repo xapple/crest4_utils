@@ -193,11 +193,10 @@ class AccessionTSV:
                     node.add_feature('taxa', name)
                 # Set the parent for the next iteration #
                 parent = node
-            # When we are on the last step of the path, add the accession #
-            if 'acc' in node.features:
-                node.acc.append(acc)
-            else:
-                node.add_feature('acc', [acc])
+            # When we are on the last step of the path, add the accession.
+            # Here we can support missing `acc` feature too.
+            if 'acc' in node.features: node.acc.append(acc)
+            else:                      node.add_feature('acc', [acc])
         # Return #
         return self.root_node
 
@@ -246,7 +245,7 @@ class MapFile(OutputFile):
         for leaf in self.acc_tsv.tree.iter_leaves():
             # Check if the leaf has an accession #
             if not hasattr(leaf, 'acc'): self.show_bad_leaf(leaf)
-            # Return the line #
+            # Return the line (support multiple accessions too) #
             for acc in leaf.acc:
                 yield str(leaf.name) + ',' + acc + '\n'
 
@@ -302,7 +301,11 @@ class TreeFile(OutputFile):
     extension = '.tre'
 
     def __call__(self):
-        self.acc_tsv.tree.write(format=8, outfile=self.output_path, format_root_node=True)
+        # Call function from ete #
+        self.acc_tsv.tree.write(format=8,
+                                outfile=self.output_path,
+                                format_root_node=True)
+        # Return #
         return self.output_path
 
 ###############################################################################
