@@ -51,7 +51,7 @@ class AnalyzeTree:
         standard library.
         """
         from ete3 import Tree as Tree3
-        return Tree3(str(self.tre_path))
+        return Tree3(str(self.tre_path), format=8)
 
     @cached_property
     def tree4(self):
@@ -61,7 +61,7 @@ class AnalyzeTree:
         exception to be raised.
         """
         from ete4 import Tree as Tree4
-        return Tree4(str(self.tre_path))
+        return Tree4(str(self.tre_path), parser=8)
 
     # ---------------------------- Node names ------------------------------- #
     def parse_tree3_ids(self):
