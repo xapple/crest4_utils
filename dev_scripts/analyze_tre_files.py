@@ -74,18 +74,13 @@ class AnalyzeTree:
 
     def check_empty_names(self):
         """Return counts of unnamed nodes for ete3 and ete4."""
-        # With ete 3 #
-        tree3_empty = 0
-        for name in self.parse_tree3_ids():
-            if name is None or name == '':
-                tree3_empty += 1
         # With ete 4 #
         tree4_empty = 0
         for name in self.parse_tree4_ids():
             if name is None or name == '':
                 tree4_empty += 1
         # Return #
-        return {'tree3': tree3_empty, 'tree4': tree4_empty}
+        return {'tree4': tree4_empty}
 
     # ------------------------------ Methods -------------------------------- #
     def parse_map_ids(self):
